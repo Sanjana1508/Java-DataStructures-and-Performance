@@ -71,26 +71,19 @@ public abstract class Document {
 		boolean isSyllable = false;
 		for(int i=0;i<word.length();i++) {
 			char ch = word.charAt(i);
-			if(i == word.length()-1 && Character.toLowerCase(ch) == 'e' && isSyllable == true && count > 0)
+			if(i == word.length()-1 && Character.toLowerCase(ch) == 'e' && !isSyllable && count > 0)
 				count--;
-			else if(isVowel(Character.toLowerCase(ch))) {
+			if(!isSyllable && isVowel(Character.toLowerCase(ch))) {
 				count++;
 				isSyllable = true;
-				while((i+1)<word.length() && isVowel(Character.toLowerCase(ch))) {
-					i++;
-					ch = word.charAt(i);
-				}
-				i--;
 			}
-			else if(Character.toLowerCase(ch) == 'y')
-				count++;
-			else
+			else if(!isVowel(Character.toLowerCase(ch)))
 				isSyllable = false;
 		}
 	    return count;
 	}
 	 private boolean isVowel(char ch) {
-		 if(ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u')
+		 if(ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u' || ch =='y')
 			 return true;
 		 return false;
 	 }
