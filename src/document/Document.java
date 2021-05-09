@@ -158,7 +158,13 @@ public abstract class Document {
 	    // TODO: You will play with this method in week 1, and 
 		// then implement it in week 2
 		int words = getNumWords();
-		double flesch = 206.835 - 1.015*(words/getNumSentences()) - 84.6*(getNumSyllables()/words);
+		double flesch =0.0;
+		try {
+		flesch = 206.835 - 1.015*(words/getNumSentences()) - 84.6*(getNumSyllables()/words);
+		}
+		catch(ArithmeticException ae) {
+			System.out.println("Divide By Zero Exception");
+		}
 	    return flesch;
 	}
 	
