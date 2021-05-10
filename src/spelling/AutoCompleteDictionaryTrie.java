@@ -1,6 +1,7 @@
 package spelling;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +41,19 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	public boolean addWord(String word)
 	{
 	    //TODO: Implement this method.
+		word = word.toLowerCase();
+		TrieNode node = root;
+		for(char c : word.toCharArray()) {
+			if(node.getValidNextCharacters().contains(c))
+				node = node.getChild(c);
+			else
+				node = node.insert(c);
+		}
+		if(!node.endsWord()) {
+			node.setEndsWord(true);
+			size++;
+			return true;
+		}
 	    return false;
 	}
 	
@@ -50,7 +64,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	public int size()
 	{
 	    //TODO: Implement this method
-	    return 0;
+	    return size;
 	}
 	
 	
@@ -60,6 +74,16 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	public boolean isWord(String s) 
 	{
 	    // TODO: Implement this method
+		s = s.toLowerCase();
+		TrieNode node = root;
+		for(char c : s.toCharArray()) {
+			if(node.getValidNextCharacters().contains(c))
+				node = node.getChild(c);
+			else
+				return false;
+		}
+		if(node.endsWord())
+			return true;
 		return false;
 	}
 
@@ -100,8 +124,32 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       If it is a word, add it to the completions list
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
+    	 List<String> output = new LinkedList<>();
+    	 prefix = prefix.toLowerCase();
+    	 TrieNode node = root;
+    	 for(char c : prefix.toCharArray()) {
+    		 if(node.getValidNextCharacters().contains(c))
+    			 node = node.getChild(c);
+    		 else
+    			 return output;
+    	 }
+    	 if(node.endsWord())
+    		 output.add(node.getText());
+    	 Queue<TrieNode> nodesInQueue = new LinkedList<>();
+    	 List<Character> cNodes = new LinkedList<>(node.getValidNextCharacters());
     	 
-         return null;
+    	 for(int i=0;i<cNodes.size();i++)
+    		 nodesInQueue.add(node.getChild(cNodes.get(i)));
+    	 
+    	 while(!nodesInQueue.isEmpty() && output.size() < numCompletions) {
+    		 TrieNode first = nodesInQueue.poll();
+    		 if(first.endsWord())
+    			 output.add(first.getText());
+    		 List<Character> childNodes = new LinkedList<>(first.getValidNextCharacters());
+    		 for(int i=0;i<childNodes.size();i++)
+    			 nodesInQueue.add(first.getChild(childNodes.get(i)));
+    	 }
+         return output;
      }
 
  	// For debugging
